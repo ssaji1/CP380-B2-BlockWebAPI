@@ -77,6 +77,27 @@ namespace CP380_B2_BlockWebAPI.Controllers
             }
 
         }
+
+        [HttpPost]
+        public void PostBlock(Block block)
+        {
+            string hash = block.Hash;
+            if (hash != list_block.Chain[list_block.Chain.Count - 1].PreviousHash)
+            {
+                BadRequestResult badRequestResult = BadRequest();
+                _ = badRequestResult;
+            }
+            else
+            {
+                NewMethod(block);
+            }
+        }
+
+        private void NewMethod(Block block)
+        {
+            list_block.Chain.Add(block);
+        }
+
         // TODO
     }
 }
