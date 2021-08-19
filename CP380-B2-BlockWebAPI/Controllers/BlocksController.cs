@@ -26,18 +26,31 @@ namespace CP380_B2_BlockWebAPI.Controllers
         public ActionResult<List<BlockSummary>> Get()
         {
             List<Block> blockslist = list_block.Chain.ToList();
-
+            var count = 0;
 
             List<BlockSummary> blockSummaryList = new List<BlockSummary>();
             foreach (var block in blockslist)
             {
+
                 list_block.AddBlock(block);
-                blockSummaryList.Add(new BlockSummary()
+                if (count == 0)
                 {
-                    Hash = block.Hash,
-                    PreviousHash = block.PreviousHash,
-                    TimeStamp = block.TimeStamp,
-                });
+                    blockSummaryList.Add(new BlockSummary()
+                    {
+                        Hash = block.Hash,
+                        PreviousHash = null,
+                        TimeStamp = block.TimeStamp,
+                    });
+                }
+                else
+                {
+                    blockSummaryList.Add(new BlockSummary()
+                    {
+                        Hash = block.Hash,
+                        PreviousHash = block.PreviousHash,
+                        TimeStamp = block.TimeStamp,
+                    });
+                }
             }
             var listsummary = blockSummaryList;
             return listsummary;
@@ -45,13 +58,14 @@ namespace CP380_B2_BlockWebAPI.Controllers
         }
 
 
-        [HttpGet("/blockslist/{hash}")]
+        [HttpGet("/blocks/{hash}")]
         public ActionResult<Block> Get(string hash)
         {
             var block = list_block.Chain.Where(tempBlock => tempBlock.Hash == hash);
             int count = block.Count();
             if (count > 0)
             {
+                 List<BlockSummary> blockSummaryList = new List<BlockSummary>();
                 return block.First();
             }
             else
